@@ -6,7 +6,7 @@ source .env
 set +o allexport
 
 # Зупиняємо поточний процес бота
-pkill -f bot.py
+sudo pkill -f bot.py
 
 # Запускаємо новий процес бота
-nohup python3 bot.py &
+nohup python3 ~/stalkify/bot/bot.py &
