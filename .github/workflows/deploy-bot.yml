@@ -36,9 +36,8 @@ jobs:
         chmod 600 ~/.ssh/id_ed25519
         ssh $USER@$HOST "mkdir -p /home/cicd/stalkify/bot"
         scp -r ./* $USER@$HOST:/home/cicd/stalkify/bot
-        ssh $USER@$HOST "pip3 install -r requirements.txt"
         ssh $USER@$HOST "mkdir -p /home/cicd/stalkify/bot/ && echo 'DISCORD_BOT_TOKEN=$DISCORD_BOT_TOKEN' > /home/cicd/stalkify/bot/.env"
-
+        ssh $USER@$HOST "pip3 install -r /home/cicd/stalkify/bot/requirements.txt"
     - name: Execute script on server
       env:
         HOST: ${{ secrets.HOST }}
