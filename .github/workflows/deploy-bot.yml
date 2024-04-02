@@ -1,0 +1,47 @@
+name: Deploy Discord Bot
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Copy files to server
+      env:
+        HOST: ${{ secrets.HOST }}
+        USER: ${{ secrets.USER }}
+        KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+      run: |
+        mkdir -p ~/.ssh
+        echo "$KEY" > ~/.ssh/id_ed25519
+        chmod 600 ~/.ssh/id_ed25519
+        ssh $USER@$HOST "mkdir -p /home/cicd/stalkify/bot
+        scp -r ./* $USER@$HOST:/home/cicd/stalkify/bot
+        ssh $USER@$HOST "mkdir -p /home/cicd/stalkify/bot/.env && echo 'DISCORD_BOT_TOKEN=$DISCORD_BOT_TOKEN' > /home/cicd/stalkify/bot/.env"
+
+    - name: Execute script on server
+      env:
+        HOST: ${{ secrets.HOST }}
+        USER: ${{ secrets.USER }}
+        KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      run: |
+        chmod 600 ~/.ssh/id_ed25519
+        ssh $USER@$HOST "/home/cicd/stalkify/bot/restart_script.sh"

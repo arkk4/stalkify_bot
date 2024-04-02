@@ -1,0 +1,4 @@
+faker
+faker-stalker-names
+discord.py
+python-dotenv
